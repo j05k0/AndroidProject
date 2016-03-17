@@ -14,7 +14,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="GET content"
+        android:text="ideted2"
         android:id="@+id/getContent"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
