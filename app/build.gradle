@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:23.2.0'
     compile project(':backendless')
     compile project(':android-volley-master')
+    compile files('libs/gson-2.2.2.jar')
 }
