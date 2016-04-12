@@ -82,8 +82,6 @@ public class GetAll extends AppCompatActivity {
 
     public void PrintToTextView(JSONObject response){
 
-
-
         try {
             //Get the instance of JSONArray that contains JSONObjects
             JSONArray jsonArray = response.optJSONArray("data");
@@ -107,5 +105,6 @@ public class GetAll extends AppCompatActivity {
         } catch (JSONException e){
             e.printStackTrace();
         }
+
     }
 }

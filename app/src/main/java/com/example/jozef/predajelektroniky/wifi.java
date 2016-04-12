@@ -11,9 +11,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.backendless.Backendless;
 import com.backendless.BackendlessCollection;
 import com.backendless.BackendlessUser;
@@ -22,9 +32,21 @@ import com.backendless.async.callback.BackendlessCallback;
 import com.backendless.exceptions.BackendlessException;
 import com.backendless.exceptions.BackendlessFault;
 import com.example.jozef.predajelektroniky.data.Products;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class wifi extends AppCompatActivity {
+
+    ArrayList<Products> products = new ArrayList<>();
 
 
     @Override
@@ -33,51 +55,68 @@ public class wifi extends AppCompatActivity {
         setContentView(R.layout.activity_wifi);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("Product list");
 
-        setTitle("GET content test");
+        getAllItems();
+    }
 
+    public void getAllItems(){
+        RequestQueue queue = Volley.newRequestQueue(this);
+        final String url = "http://api.backendless.com/v1/data/Products";
 
+        // HashMap<String, String> params = new HashMap<String, String>();
+        // params.put("token", "AbCdEfGh123456");
 
-        final TextView text = (TextView)findViewById(R.id.textView);
-        Button getContent = (Button)findViewById(R.id.getContent);
-        getContent.setOnClickListener(new View.OnClickListener() {
+        JsonObjectRequest request = new JsonObjectRequest(url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        parseJson(response);
+                    }
+                }, new Response.ErrorListener() {
             @Override
-            public void onClick(View v) {
-                //FIND FIRST
-                /*Backendless.Persistence.of(Products.class).findLast(new AsyncCallback<Products>() {
-                    @Override
-                    public void handleResponse(Products products) {
-                        text.setText("");
-                        text.append(products.getBrand() + " " + products.getModel() + "\n");
-                    }
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+            }
+        })
+        {
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("application-id", "235A3A14-40D9-B1C4-FF05-B16778D82900");
+                headers.put("secret-key", "18EDC1BE-8A8E-F91E-FFA5-B7027802A300"); //zmenit
+                headers.put("Content-Type","application/json");
+                headers.put("application-type","REST");
+                return headers;
+            }
+        };
 
-                    @Override
-                    public void handleFault(BackendlessFault backendlessFault) {
-                        Toast.makeText(getBaseContext(), "Can't connect to server", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
+        queue.add(request);
+    }
 
-                //FIND ALL
+    public void parseJson(JSONObject json){
+        try {
+            //Get the instance of JSONArray that contains JSONObjects
+            JSONArray jsonArray = json.optJSONArray("data");
 
-                Backendless.Persistence.of(Products.class).find(new AsyncCallback<BackendlessCollection<Products>>() {
-                    @Override
-                    public void handleResponse(BackendlessCollection<Products> productsBackendlessCollection) {
-                        text.setText("");
-                        for (Products product : productsBackendlessCollection.getCurrentPage()){
-                            text.append(product.getBrand() + " " + product.getModel() + "\n");
-                        }
+            //Iterate the jsonArray and print the info of JSONObjects
+            for(int i=0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Products product = new Products();
 
-                    }
-
-                    @Override
-                    public void handleFault(BackendlessFault backendlessFault) {
-                        Toast.makeText(getBaseContext(), "Can't connect to server", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                product.setBrand(jsonObject.optString("Brand").toString());
+                product.setModel(jsonObject.optString("Model").toString());
+                product.setCategory(jsonObject.optString("Category").toString());
+                products.add(product);
 
             }
-        });
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        ArrayAdapter<Products> allAdapter = new CustomLayout(this, products);
+        ListView menuListView = (ListView) findViewById(R.id.listView);
+        menuListView.setAdapter(allAdapter);
+
     }
 
 }

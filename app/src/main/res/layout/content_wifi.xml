@@ -11,22 +11,10 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.jozef.predajelektroniky.wifi">
 
-    <Button
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ideted3j"
-        android:id="@+id/getContent"
+        android:id="@+id/listView"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:layout_below="@+id/getContent"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="54dp"
-        android:layout_alignParentBottom="true"
-        android:textSize="30dp" />
-
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
